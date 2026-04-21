@@ -1,5 +1,4 @@
 #include "movie.h"
-#include <iostream>
 
 using namespace std;
 
@@ -25,7 +24,26 @@ void Movie::addRating(double r) {
     }
 }
 
-void Movie::display() const {
-    cout << "ID: " << id << " | " << title << " (" << releaseYear << ") [" << genre << "] "
-         << "- 평균 평점: " << getAverageRating() << " (" << ratingCount << "명 참여)" << endl;
+bool Movie::operator==(const Movie& other) const {
+    return this->title == other.title; 
+}
+
+bool Movie::operator!=(const Movie& other) const {
+    return !(*this == other);
+}
+
+bool Movie::operator<(const Movie& other) const {
+    double thisAvg = this->getAverageRating();
+    double otherAvg = other.getAverageRating();
+    
+    if (thisAvg != otherAvg) {
+        return thisAvg < otherAvg;
+    }
+    return this->title < other.title;
+}
+
+ostream& operator<<(ostream& os, const Movie& m) {
+    os << "ID: " << m.id << " | " << m.title << " (" << m.releaseYear << ") [" << m.genre << "] "
+       << "- 평균 평점: " << m.getAverageRating() << " (" << m.ratingCount << "명 참여)";
+    return os;
 }
