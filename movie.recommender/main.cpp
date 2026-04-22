@@ -1,54 +1,97 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
+#include <string>
 #include "movie.h"
 #include "user.h"
 #include "rating.h"
+#include "movie_manager.h"
+#include "user_manager.h"
 
 using namespace std;
 
+void showMenu() {
+    cout << "\n===== 영화 추천 시스템 =====" << endl;
+    cout << "1. 영화 추가" << endl;
+    cout << "2. 모든 영화 출력 (평점순)" << endl;
+    cout << "3. 영화 제목 검색" << endl;
+    cout << "4. 사용자 추가" << endl;
+    cout << "5. 모든 사용자 출력" << endl;
+    cout << "6. 사용자 이름 검색" << endl;
+    cout << "0. 종료" << endl;
+    cout << "선택: ";
+}
+
 int main() {
-    vector<Movie> movies;
-    movies.push_back(Movie(1, "그것만이 내세상", "코미디", 2018)); 
-    movies.push_back(Movie(2, "식스센스", "스릴러", 1999));
+    MovieManager movieMgr;
+    UserManager userMgr;
 
-    User me(20252811, "방현민", "bhmin0217@gmail.com");
-    User user2(20250001, "김철수", "chulsoo@example.com");
-    User user3(20250002, "이영희", "younghee@example.com");
-
-    Rating r1_1(me.getId(), movies[0].getId(), 5.0);
-    Rating r1_2(user2.getId(), movies[0].getId(), 4.0);
-    Rating r1_3(user3.getId(), movies[0].getId(), 4.5);
+    userMgr.addUser(User(20252811, "방현민", "bhmin0217@gmail.com"));
+    userMgr.addUser(User(20250001, "김철수", "chulsoo@example.com"));
+    userMgr.addUser(User(20250002, "이영희", "younghee@example.com"));
     
-    movies[0].addRating(r1_1.getScore());
-    movies[0].addRating(r1_2.getScore());
-    movies[0].addRating(r1_3.getScore());
+    Movie m1(1, "그것만이 내세상", "코미디", 2018);
+    m1.addRating(5.0);
+    m1.addRating(4.0);
+    m1.addRating(4.5);
+    movieMgr.addMovie(m1);
 
-    Rating r2_1(me.getId(), movies[1].getId(), 5.0);
-    Rating r2_2(user2.getId(), movies[1].getId(), 4.8);
-    Rating r2_3(user3.getId(), movies[1].getId(), 9.9); 
+    Movie m2(2, "식스센스", "스릴러", 1999);
+    m2.addRating(5.0);
+    m2.addRating(4.8);
+    m2.addRating(9.9); 
+    movieMgr.addMovie(m2);
 
-    movies[1].addRating(r2_1.getScore());
-    movies[1].addRating(r2_2.getScore());
-    movies[1].addRating(r2_3.getScore());
+    int choice;
+    while (true) {
+        showMenu();
+        cin >> choice;
 
-    sort(movies.begin(), movies.end());
+        if (cin.fail()) {
+            cin.clear();
+            string discard;
+            getline(cin, discard);
+            continue;
+        }
 
-    cout << "========== [ 등록된 사용자 목록 ] ==========" << endl;
-    me.display();
-    user2.display();
-    user3.display();
+        if (choice == 0) break;
 
-    cout << "\n========== [ 상세 평점 기록 ] ==========" << endl;
-    r1_1.display();
-    r1_2.display();
-    r1_3.display();
-    r2_1.display();
-    r2_2.display();
-
-    cout << "\n========== [ 영화 목록 (평균 평점순 정렬) ] ==========" << endl;
-    for (size_t i = 0; i < movies.size(); ++i) {
-        movies[i].display();
+        if (choice == 1) {
+            int id, year;
+            string title, genre;
+            cout << "ID: "; cin >> id;
+            cin.ignore();
+            cout << "제목: "; getline(cin, title);
+            cout << "장르: "; getline(cin, genre);
+            cout << "개봉연도: "; cin >> year;
+            movieMgr.addMovie(Movie(id, title, genre, year));
+        } 
+        else if (choice == 2) {
+            movieMgr.sortByRating();
+            movieMgr.printAllMovies();
+        } 
+        else if (choice == 3) {
+            string title;
+            cin.ignore();
+            cout << "검색할 제목: "; getline(cin, title);
+            movieMgr.searchByTitle(title);
+        } 
+        else if (choice == 4) {
+            int id;
+            string name, email;
+            cout << "ID(학번): "; cin >> id;
+            cin.ignore();
+            cout << "이름: "; getline(cin, name);
+            cout << "이메일: "; getline(cin, email);
+            userMgr.addUser(User(id, name, email));
+        } 
+        else if (choice == 5) {
+            userMgr.printAllUsers();
+        } 
+        else if (choice == 6) {
+            string name;
+            cin.ignore();
+            cout << "검색할 이름: "; getline(cin, name);
+            userMgr.searchByName(name);
+        }
     }
 
     return 0;
