@@ -1,23 +1,17 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++14
+CXXFLAGS = -Wall -Wextra -std=c++11
 
-TARGET = main
-OBJS = main.o movie.o user.o rating.o
+TARGET = movie.recommender
+SRCS = main.cpp movie.cpp user.cpp rating.cpp movie_manager.cpp user_manager.cpp
+OBJS = $(SRCS:.cpp=.o)
+
+all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 
-main.o: main.cpp movie.h user.h rating.h
-	$(CXX) $(CXXFLAGS) -c main.cpp
-
-movie.o: movie.cpp movie.h
-	$(CXX) $(CXXFLAGS) -c movie.cpp
-
-user.o: user.cpp user.h
-	$(CXX) $(CXXFLAGS) -c user.cpp
-
-rating.o: rating.cpp rating.h
-	$(CXX) $(CXXFLAGS) -c rating.cpp
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJS) $(TARGET)

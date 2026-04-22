@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include "movie.h"
 #include "user.h"
 #include "rating.h"
@@ -31,6 +32,8 @@ int main() {
     movies[1].addRating(r2_2.getScore());
     movies[1].addRating(r2_3.getScore());
 
+    sort(movies.begin(), movies.end());
+
     cout << "========== [ 등록된 사용자 목록 ] ==========" << endl;
     me.display();
     user2.display();
@@ -43,9 +46,9 @@ int main() {
     r2_1.display();
     r2_2.display();
 
-    cout << "\n========== [ 영화 목록 (평균 평점 반영) ] ==========" << endl;
+    cout << "\n========== [ 영화 목록 (평균 평점순 정렬) ] ==========" << endl;
     for (size_t i = 0; i < movies.size(); ++i) {
-        cout << movies[i] << endl; 
+        movies[i].display();
     }
 
     return 0;
