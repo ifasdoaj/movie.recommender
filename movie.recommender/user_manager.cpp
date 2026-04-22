@@ -16,17 +16,3 @@ void UserManager::printAllUsers() const {
         users[i].display();
     }
 }
-
-void UserManager::searchByName(const string& name) const {
-    bool found = false;
-    for (size_t i = 0; i < users.size(); ++i) {
-        if (users[i].getName() == name) {
-            users[i].display();
-            found = true;
-        }
-    }
-
-    if (!found) {
-        cout << "해당 이름의 사용자를 찾을 수 없습니다." << endl;
-    }
-}

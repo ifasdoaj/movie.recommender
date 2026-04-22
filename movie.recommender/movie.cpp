@@ -1,5 +1,5 @@
 #include "movie.h"
-#include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -10,12 +10,9 @@ Movie::Movie(int mId, string mTitle, string mGenre, int mYear)
 
 int Movie::getId() const { return id; }
 string Movie::getTitle() const { return title; }
-string Movie::getGenre() const { return genre; }
-int Movie::getReleaseYear() const { return releaseYear; }
 
 double Movie::getAverageRating() const {
-    if (ratingCount == 0) return 0.0;
-    return totalRating / ratingCount;
+    return (ratingCount == 0) ? 0.0 : totalRating / ratingCount;
 }
 
 void Movie::addRating(double r) {
@@ -25,18 +22,23 @@ void Movie::addRating(double r) {
     }
 }
 
-void Movie::display() const {
-    cout << "ID: " << id << " | " << title << " (" << releaseYear << ") [" << genre << "] "
-         << "- 평균 평점: " << getAverageRating() << " (" << ratingCount << "명 참여)" << endl;
+ostream& operator<<(ostream& os, const Movie& m) {
+    os << "ID: " << m.id << " | " << setw(20) << left << m.title 
+       << " | " << m.releaseYear << " | " << m.genre 
+       << " | 평점: " << fixed << setprecision(1) << m.getAverageRating()
+       << " (" << m.ratingCount << "명)";
+    return os;
 }
 
-bool Movie::operator==(const Movie& other) const {
-    return this->title == other.title;
+istream& operator>>(istream& is, Movie& m) {
+    cout << "ID: "; is >> m.id;
+    is.ignore(1000, '\n');
+    cout << "제목: "; getline(is, m.title);
+    cout << "장르: "; getline(is, m.genre);
+    cout << "연도: "; is >> m.releaseYear;
+    return is;
 }
 
 bool Movie::operator<(const Movie& other) const {
-    if (this->getAverageRating() != other.getAverageRating()) {
-        return this->getAverageRating() > other.getAverageRating();
-    }
-    return this->title < other.title;
+    return this->getAverageRating() > other.getAverageRating();
 }

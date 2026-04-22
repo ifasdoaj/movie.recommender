@@ -1,98 +1,67 @@
 #include <iostream>
-#include <string>
-#include "movie.h"
-#include "user.h"
-#include "rating.h"
 #include "movie_manager.h"
 #include "user_manager.h"
 
 using namespace std;
 
-void showMenu() {
-    cout << "\n===== 영화 추천 시스템 =====" << endl;
-    cout << "1. 영화 추가" << endl;
-    cout << "2. 모든 영화 출력 (평점순)" << endl;
-    cout << "3. 영화 제목 검색" << endl;
-    cout << "4. 사용자 추가" << endl;
-    cout << "5. 모든 사용자 출력" << endl;
-    cout << "6. 사용자 이름 검색" << endl;
-    cout << "0. 종료" << endl;
-    cout << "선택: ";
-}
-
 int main() {
-    MovieManager movieMgr;
-    UserManager userMgr;
+    movie_manager movie_mgr;
+    user_manager user_mgr;
 
-    userMgr.addUser(User(20252811, "방현민", "bhmin0217@gmail.com"));
-    userMgr.addUser(User(20250001, "김철수", "chulsoo@example.com"));
-    userMgr.addUser(User(20250002, "이영희", "younghee@example.com"));
+    movie_mgr.add_movie_direct(Movie(1, "그것만이 내세상", "코미디", 2018));
+    movie_mgr.add_movie_direct(Movie(2, "식스센스", "스릴러", 1999));
     
-    Movie m1(1, "그것만이 내세상", "코미디", 2018);
-    m1.addRating(5.0);
-    m1.addRating(4.0);
-    m1.addRating(4.5);
-    movieMgr.addMovie(m1);
+    user_mgr.add_user_direct(User(20252811, "방현민", "bhmin0217@gmail.com"));
+    user_mgr.add_user_direct(User(20250001, "김철수", "chulsoo@example.com"));
+    user_mgr.add_user_direct(User(20250002, "이영희", "younghee@example.com"));
 
-    Movie m2(2, "식스센스", "스릴러", 1999);
-    m2.addRating(5.0);
-    m2.addRating(4.8);
-    m2.addRating(9.9); 
-    movieMgr.addMovie(m2);
+    Movie* m1 = movie_mgr.find_by_id(1);
+    Movie* m2 = movie_mgr.find_by_id(2);
+    
+    if (m1) { 
+        m1->addRating(5.0); 
+        m1->addRating(4.0); 
+        m1->addRating(4.5); 
+    }
+    if (m2) { 
+        m2->addRating(5.0); 
+        m2->addRating(4.8); 
+        m2->addRating(0.0); 
+    }
 
     int choice;
     while (true) {
-        showMenu();
-        cin >> choice;
+        cout << "\n=== Movie Recommender ===\n" << endl;
+        cout << "[ 영화 ]\n 1. 영화 추가\n 2. 제목으로 검색\n 3. 전체 목록 출력\n 4. 평점순 정렬 출력" << endl;
+        cout << "\n[ 사용자 ]\n 5. 사용자 추가\n 6. 사용자 목록 출력" << endl;
+        cout << "\n[ 평점 ]\n 7. 평점 입력\n 8. 영화별 평점 보기\n\n0. 종료\n\n선택 > ";
 
-        if (cin.fail()) {
+        if (!(cin >> choice)) {
             cin.clear();
-            string discard;
-            getline(cin, discard);
+            cin.ignore(1000, '\n');
             continue;
         }
 
         if (choice == 0) break;
 
-        if (choice == 1) {
-            int id, year;
-            string title, genre;
-            cout << "ID: "; cin >> id;
-            cin.ignore();
-            cout << "제목: "; getline(cin, title);
-            cout << "장르: "; getline(cin, genre);
-            cout << "개봉연도: "; cin >> year;
-            movieMgr.addMovie(Movie(id, title, genre, year));
-        } 
-        else if (choice == 2) {
-            movieMgr.sortByRating();
-            movieMgr.printAllMovies();
-        } 
-        else if (choice == 3) {
-            string title;
-            cin.ignore();
-            cout << "검색할 제목: "; getline(cin, title);
-            movieMgr.searchByTitle(title);
-        } 
-        else if (choice == 4) {
-            int id;
-            string name, email;
-            cout << "ID(학번): "; cin >> id;
-            cin.ignore();
-            cout << "이름: "; getline(cin, name);
-            cout << "이메일: "; getline(cin, email);
-            userMgr.addUser(User(id, name, email));
-        } 
-        else if (choice == 5) {
-            userMgr.printAllUsers();
-        } 
-        else if (choice == 6) {
-            string name;
-            cin.ignore();
-            cout << "검색할 이름: "; getline(cin, name);
-            userMgr.searchByName(name);
+        switch (choice) {
+            case 1: movie_mgr.add_movie(); break;
+            case 2: movie_mgr.search_by_title(); break;
+            case 3: movie_mgr.print_all(); break;
+            case 4: movie_mgr.sort_and_print(); break;
+            case 5: user_mgr.add_user(); break;
+            case 6: user_mgr.print_all(); break;
+            case 7: {
+                int m_id; double score;
+                cout << "영화 ID: "; cin >> m_id;
+                cout << "평점(0-5): "; cin >> score;
+                Movie* m = movie_mgr.find_by_id(m_id);
+                if (m) m->addRating(score);
+                else cout << "해당 영화가 없습니다." << endl;
+                break;
+            }
+            case 8: movie_mgr.print_all(); break;
         }
     }
-
     return 0;
 }
