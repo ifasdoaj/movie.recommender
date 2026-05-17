@@ -1,33 +1,28 @@
 #include <iostream>
 #include "movie_manager.h"
 #include "user_manager.h"
+#include "rating_manager.h"
 
 using namespace std;
 
 int main() {
-    movie_manager movie_mgr;
-    user_manager user_mgr;
+    RatingManager rating_mgr;
+    UserManager user_mgr;
+    MovieManager movie_mgr(rating_mgr, user_mgr);
 
-    movie_mgr.add_movie_direct(Movie(1, "그것만이 내세상", "코미디", 2018));
-    movie_mgr.add_movie_direct(Movie(2, "식스센스", "스릴러", 1999));
-    
-    user_mgr.add_user_direct(User(20252811, "방현민", "bhmin0217@gmail.com"));
-    user_mgr.add_user_direct(User(20250001, "김철수", "chulsoo@example.com"));
-    user_mgr.add_user_direct(User(20250002, "이영희", "younghee@example.com"));
+    movie_mgr.addMovie(Movie(1, "그것만이 내세상", "코미디", 2018, 20252811));
+    movie_mgr.addMovie(Movie(2, "식스센스", "스릴러", 1999, 20250001));
 
-    Movie* m1 = movie_mgr.find_by_id(1);
-    Movie* m2 = movie_mgr.find_by_id(2);
-    
-    if (m1) { 
-        m1->addRating(5.0); 
-        m1->addRating(4.0); 
-        m1->addRating(4.5); 
-    }
-    if (m2) { 
-        m2->addRating(5.0); 
-        m2->addRating(4.8); 
-        m2->addRating(0.0); 
-    }
+    user_mgr.addUser(User(20252811, "방현민", "bhmin0217@gmail.com"));
+    user_mgr.addUser(User(20250001, "김철수", "chulsoo@example.com"));
+    user_mgr.addUser(User(20250002, "이영희", "younghee@example.com"));
+
+    movie_mgr.addRatingToMovie(1, 20252811, 5.0);
+    movie_mgr.addRatingToMovie(1, 20250001, 4.0);
+    movie_mgr.addRatingToMovie(1, 20250002, 4.5);
+    movie_mgr.addRatingToMovie(2, 20252811, 5.0);
+    movie_mgr.addRatingToMovie(2, 20250001, 4.8);
+    movie_mgr.addRatingToMovie(2, 20250002, 0.0);
 
     int choice;
     while (true) {
@@ -45,22 +40,47 @@ int main() {
         if (choice == 0) break;
 
         switch (choice) {
-            case 1: movie_mgr.add_movie(); break;
-            case 2: movie_mgr.search_by_title(); break;
-            case 3: movie_mgr.print_all(); break;
-            case 4: movie_mgr.sort_and_print(); break;
-            case 5: user_mgr.add_user(); break;
-            case 6: user_mgr.print_all(); break;
-            case 7: {
-                int m_id; double score;
-                cout << "영화 ID: "; cin >> m_id;
-                cout << "평점(0-5): "; cin >> score;
-                Movie* m = movie_mgr.find_by_id(m_id);
-                if (m) m->addRating(score);
-                else cout << "해당 영화가 없습니다." << endl;
+            case 1: {
+                int userId;
+                cout << "사용자 ID: "; cin >> userId;
+                movie_mgr.addMovieByUser(userId);
                 break;
             }
-            case 8: movie_mgr.print_all(); break;
+            case 2: {
+                string title;
+                cout << "검색할 제목: ";
+                cin.ignore();
+                getline(cin, title);
+                movie_mgr.findByTitle(title);
+                break;
+            }
+            case 3: movie_mgr.printAll(); break;
+            case 4: movie_mgr.sortByRating(); break;
+            case 5: {
+                int id;
+                string name, email;
+                cout << "ID: "; cin >> id;
+                cout << "이름: "; cin >> name;
+                cout << "이메일: "; cin >> email;
+                user_mgr.addUser(User(id, name, email));
+                break;
+            }
+            case 6: user_mgr.printAll(); break;
+            case 7: {
+                int m_id, u_id;
+                double score;
+                cout << "영화 ID: "; cin >> m_id;
+                cout << "사용자 ID: "; cin >> u_id;
+                cout << "평점(0-5): "; cin >> score;
+                movie_mgr.addRatingToMovie(m_id, u_id, score);
+                break;
+            }
+            case 8: {
+                int m_id;
+                cout << "영화 ID: "; cin >> m_id;
+                movie_mgr.printRatingsByMovieId(m_id);
+                break;
+            }
         }
     }
     return 0;

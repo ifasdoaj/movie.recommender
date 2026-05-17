@@ -1,13 +1,15 @@
 #pragma once
 #include <vector>
+#include <string>
 #include "user.h"
 
-class user_manager {
+class UserManager {
 private:
     std::vector<User> users;
 
 public:
-    void add_user_direct(const User& u);
-    void add_user();
-    void print_all() const;
+    void addUser(const User& u);
+    void findByName(const std::string& name) const;
+    void printAll() const;
+    User* findById(int id);
 };

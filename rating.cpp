@@ -15,7 +15,7 @@ Rating::Rating(int uId, int mId, double s) : userId(uId), movieId(mId) {
 
 int Rating::getUserId() const { return userId; }
 int Rating::getMovieId() const { return movieId; }
-double Rating::getScore() const { return score; }
+double Rating::getScore() const { return score; }   
 
 void Rating::display() const {
     cout << "User [" << userId << "] -> Movie [" << movieId << "] : " << score << " pts" << endl;

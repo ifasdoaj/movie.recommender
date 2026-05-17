@@ -3,13 +3,14 @@
 
 using namespace std;
 
-Movie::Movie() : id(0), title(""), genre(""), releaseYear(0), totalRating(0.0), ratingCount(0) {}
+Movie::Movie() : id(0), title(""), genre(""), releaseYear(0), totalRating(0.0), ratingCount(0), addedByUserId(0) {}
 
-Movie::Movie(int mId, string mTitle, string mGenre, int mYear) 
-    : id(mId), title(mTitle), genre(mGenre), releaseYear(mYear), totalRating(0.0), ratingCount(0) {}
+Movie::Movie(int mId, string mTitle, string mGenre, int mYear, int userId)
+    : id(mId), title(mTitle), genre(mGenre), releaseYear(mYear), totalRating(0.0), ratingCount(0), addedByUserId(userId) {}
 
 int Movie::getId() const { return id; }
 string Movie::getTitle() const { return title; }
+int Movie::getAddedByUserId() const { return addedByUserId; }
 
 double Movie::getAverageRating() const {
     return (ratingCount == 0) ? 0.0 : totalRating / ratingCount;
@@ -23,10 +24,11 @@ void Movie::addRating(double r) {
 }
 
 ostream& operator<<(ostream& os, const Movie& m) {
-    os << "ID: " << m.id << " | " << setw(20) << left << m.title 
-       << " | " << m.releaseYear << " | " << m.genre 
+    os << "ID: " << m.id << " | " << setw(20) << left << m.title
+       << " | " << m.releaseYear << " | " << m.genre
        << " | 평점: " << fixed << setprecision(1) << m.getAverageRating()
-       << " (" << m.ratingCount << "명)";
+       << " (" << m.ratingCount << "명)"
+       << " | 등록자 ID: " << m.addedByUserId;
     return os;
 }
 

@@ -2,16 +2,24 @@
 #include <vector>
 #include <string>
 #include "movie.h"
+#include "rating_manager.h"
+#include "user_manager.h"
 
-class movie_manager {
+class MovieManager {
 private:
     std::vector<Movie> movies;
+    RatingManager& ratingManager;
+    UserManager& userManager;
 
 public:
-    void add_movie_direct(const Movie& m);
-    void add_movie();
-    void search_by_title() const;
-    void print_all() const;
-    void sort_and_print();
-    Movie* find_by_id(int id);
+    MovieManager(RatingManager& rm, UserManager& um);
+
+    void addMovie(const Movie& m);
+    void addMovieByUser(int userId);
+    void findByTitle(const std::string& title) const;
+    void sortByRating();
+    void printAll() const;
+    void addRatingToMovie(int mId, int uId, double score);
+    void printRatingsByMovieId(int mId) const;
+    Movie* findById(int id);
 };

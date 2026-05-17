@@ -1,8 +1,8 @@
 CC = g++
 CFLAGS = -Wall -g
-TARGET = movie_recommender
+TARGET = movie.recommender
 
-OBJS = main.o movie.o user.o rating.o movie_manager.o user_manager.o
+OBJS = main.o movie.o user.o rating.o movie_manager.o user_manager.o rating_manager.o
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
