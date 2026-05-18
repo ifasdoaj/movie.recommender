@@ -10,6 +10,8 @@ Movie::Movie(int mId, string mTitle, string mGenre, int mYear, int userId)
 
 int Movie::getId() const { return id; }
 string Movie::getTitle() const { return title; }
+string Movie::getGenre() const { return genre; }
+int Movie::getReleaseYear() const { return releaseYear; }
 int Movie::getAddedByUserId() const { return addedByUserId; }
 
 double Movie::getAverageRating() const {
@@ -21,6 +23,12 @@ void Movie::addRating(double r) {
         totalRating += r;
         ratingCount++;
     }
+}
+
+// ← 추가됨: syncRatings() 호출 전 초기화용
+void Movie::resetRatingData() {
+    totalRating = 0.0;
+    ratingCount = 0;
 }
 
 ostream& operator<<(ostream& os, const Movie& m) {

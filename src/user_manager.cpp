@@ -1,5 +1,7 @@
 #include "user_manager.h"
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -31,4 +33,40 @@ User* UserManager::findById(int id) {
         if (u.getId() == id) return &u;
     }
     return nullptr;
+}
+
+void UserManager::loadFromFile(const string& filename) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Error: " << filename << " 열 수 없습니다." << endl;
+        return;
+    }
+    string line;
+    getline(file, line);
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string token;
+        getline(ss, token, ','); int id = stoi(token);
+        getline(ss, token, ','); string name = token;
+        getline(ss, token, ','); string email = token;
+        users.push_back(User(id, name, email));
+    }
+    file.close();
+    cout << filename << " 로드 완료: " << users.size() << "건" << endl;
+}
+
+void UserManager::saveToFile(const string& filename) const {
+    ofstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Error: " << filename << " 저장 실패" << endl;
+        return;
+    }
+    file << "id,name,email" << endl;
+    for (const auto& u : users) {
+        file << u.getId() << ","
+             << u.getName() << ","
+             << u.getEmail() << endl;
+    }
+    file.close();
+    cout << filename << " 저장 완료: " << users.size() << "건" << endl;
 }
