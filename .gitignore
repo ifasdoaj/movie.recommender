@@ -1,0 +1,5 @@
+*.o
+movie.recommender
+movie_recommender
+main
+MovieManager.o
