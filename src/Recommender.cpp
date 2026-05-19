@@ -1,6 +1,5 @@
 #include "Recommender.h"
 #include <algorithm>
-#include <cstdlib>
 #include <map>
 #include <set>
 
@@ -8,21 +7,6 @@ using namespace std;
 
 Recommender::Recommender(MovieManager& mm, RatingManager& rm)
     : movieManager(mm), ratingManager(rm) {}
-
-int Recommender::SimilarityCalculate(const vector<Rating>& ratingsA,
-                                      const vector<Rating>& ratingsB) const {
-    double similarity = 0.0;
-
-    for (const auto& ra : ratingsA) {
-        for (const auto& rb : ratingsB) {
-            if (ra.getMovieId() == rb.getMovieId()) {
-                similarity += 1.0 / (1.0 + abs(ra.getScore() - rb.getScore()));
-            }
-        }
-    }
-
-    return (int)(similarity * 100);
-}
 
 vector<int> Recommender::findSimilarUsers(int userId, int k) const {
     vector<Rating> myRatings = ratingManager.findByUser(userId);
@@ -33,7 +17,7 @@ vector<int> Recommender::findSimilarUsers(int userId, int k) const {
     for (int uid : allUserIds) {
         if (uid == userId) continue;
         vector<Rating> otherRatings = ratingManager.findByUser(uid);
-        int sim = SimilarityCalculate(myRatings, otherRatings);
+        int sim = SimilarityCalculator::calculate(myRatings, otherRatings);
         similarities.push_back({uid, sim});
     }
 

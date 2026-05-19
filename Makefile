@@ -4,7 +4,7 @@ TARGET = movie.recommender
 
 SRCS = src/main.cpp src/movie.cpp src/user.cpp src/rating.cpp \
        src/movie_manager.cpp src/user_manager.cpp src/rating_manager.cpp \
-       src/Recommender.cpp
+       src/Recommender.cpp src/SimilarityCalculator.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
