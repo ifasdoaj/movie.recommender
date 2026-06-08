@@ -37,7 +37,7 @@ vector<int> Recommender::findSimilarUsers(int userId, int k) const {
 vector<int> Recommender::recommend(int userId, int n) const {
     vector<Rating> myRatings = ratingManager.findByUser(userId);
 
-    if (myRatings.empty()) {
+    if (myRatings.empty()) {  // 유효성검사 
         return {};
     }
 
@@ -77,5 +77,5 @@ vector<int> Recommender::recommend(int userId, int n) const {
     for (int i = 0; i < limit; i++) {
         result.push_back(sorted[i].first);
     }
-    return result;
+    return result; 
 }

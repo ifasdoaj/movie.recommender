@@ -3,6 +3,9 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <numeric>
+#include <map>
+#include <stdexcept>
 
 using namespace std;
 
@@ -81,7 +84,6 @@ Movie* MovieManager::findById(int id) {
     return nullptr;
 }
 
-// ← 수정됨: 호출 전 resetRatingData()로 초기화해서 이중 적산 방지
 void MovieManager::syncRatings() {
     for (auto& m : movies) {
         m.resetRatingData();
@@ -93,6 +95,59 @@ void MovieManager::syncRatings() {
     }
 }
 
+double MovieManager::getAverageRating() const {
+    if (movies.empty()) {
+        throw runtime_error("영화 데이터가 없습니다.");
+    }
+    double sum = accumulate(movies.begin(), movies.end(), 0.0,
+        [](double acc, const Movie& m) {
+            return acc + m.getAverageRating();
+        });
+    return sum / movies.size();
+}
+
+map<string, double> MovieManager::getAverageRatingByGenre() const {
+    map<string, double> sumByGenre;
+    map<string, int> countByGenre;
+
+    for (const auto& m : movies) {
+        sumByGenre[m.getGenre()] += m.getAverageRating();
+        countByGenre[m.getGenre()]++;
+    }
+
+    map<string, double> avgByGenre;
+    for (const auto& [genre, sum] : sumByGenre) {
+        avgByGenre[genre] = sum / countByGenre[genre];
+    }
+    return avgByGenre;
+}
+
+vector<Movie> MovieManager::getTopN(int n) const {
+    vector<Movie> sorted = movies;
+    sort(sorted.begin(), sorted.end(), [](const Movie& a, const Movie& b) {
+        return a.getAverageRating() > b.getAverageRating();
+    });
+    if (n > (int)sorted.size()) {
+        n = sorted.size();
+    }
+    return vector<Movie>(sorted.begin(), sorted.begin() + n);
+}
+
+void MovieManager::exportStatisticsToFile(const string& filename) const {
+    ofstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Error: " << filename << " 저장 실패" << endl;
+        return;
+    }
+    file << "genre,averageRating" << endl;
+    map<string, double> avgByGenre = getAverageRatingByGenre();
+    for (const auto& [genre, avg] : avgByGenre) {
+        file << genre << "," << avg << endl;
+    }
+    file.close();
+    cout << filename << " 통계 저장 완료" << endl;
+}
+
 void MovieManager::loadFromFile(const string& filename) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -100,7 +155,7 @@ void MovieManager::loadFromFile(const string& filename) {
         return;
     }
     string line;
-    getline(file, line); // 헤더 스킵
+    getline(file, line);
     while (getline(file, line)) {
         stringstream ss(line);
         string token;
@@ -108,7 +163,6 @@ void MovieManager::loadFromFile(const string& filename) {
         getline(ss, token, ','); string title = token;
         getline(ss, token, ','); string genre = token;
         getline(ss, token, ','); int year = stoi(token);
-        // ← 수정됨: addedByUserId 로드
         int userId = 0;
         if (getline(ss, token, ',')) {
             userId = stoi(token);
@@ -125,7 +179,6 @@ void MovieManager::saveToFile(const string& filename) const {
         cerr << "Error: " << filename << " 저장 실패" << endl;
         return;
     }
-    // ← 수정됨: addedByUserId 컬럼 추가
     file << "id,title,genre,year,addedByUserId" << endl;
     for (const auto& m : movies) {
         file << m.getId() << ","
